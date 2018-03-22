@@ -1,18 +1,23 @@
 <!DOCTYPE html>
 <head>
    <title>RPi Web Server</title>
+      <!-- Optional theme -->
+   <link rel="stylesheet" href="/static/appStyle.css">
    <!-- Latest compiled and minified JavaScript -->
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" inte
+grity="sha384-0mSbJDEHialfmuBBQP
 6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 </head>
 
 <body>
    <h1>RPi Web Server</h1>
+   <div>
    {% for latch in latches %}
+   <div class="floating-box">
    <h2>{{ latches[latch].name }}</h2>
-   <div class="row"><div class="col-md-2">
-   <a href="/{{latch}}/off" class="btn btn-block btn-lg btn-default" role="button">Turn off</a>
-   <a href="/{{latch}}/on" class="btn btn-block btn-lg btn-primary" role="button">Turn on</a>
-   </div></div>   
+   <a href="/{{latch}}/off"><img src="/static/off.png" alt="Off" width="144" height="119"></a>
+   <a href="/{{latch}}/on"><img src="/static/on.png" alt="On" width="144" height="119"></a>
+   </div>   
    {% endfor %}
+   </div>
 </body>
