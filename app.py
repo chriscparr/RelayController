@@ -14,19 +14,20 @@ app = Flask(__name__)
 GPIO.setmode(GPIO.BCM)
 
 latches = {
-    0 : {'name' : 'Latch0', 'A2' : 'false', 'A1' : 'false', 'A0' : 'false'},
-    1 : {'name' : 'Latch1', 'A2' : 'false', 'A1' : 'false', 'A0' : 'true'},
-    2 : {'name' : 'Latch2', 'A2' : 'false', 'A1' : 'true', 'A0' : 'false'},
-    3 : {'name' : 'Latch3', 'A2' : 'false', 'A1' : 'true', 'A0' : 'true'},
+    0 : {'name' : 'Down Light', 'A2' : 'false', 'A1' : 'false', 'A0' : 'false'},
+    1 : {'name' : 'ScreenL', 'A2' : 'false', 'A1' : 'false', 'A0' : 'true'},
+    2 : {'name' : 'Unused', 'A2' : 'false', 'A1' : 'true', 'A0' : 'false'},
+    3 : {'name' : 'ScreenR', 'A2' : 'false', 'A1' : 'true', 'A0' : 'true'},
     4 : {'name' : 'Latch4', 'A2' : 'true', 'A1' : 'false', 'A0' : 'false'},
     5 : {'name' : 'Latch5', 'A2' : 'true', 'A1' : 'false', 'A0' : 'true'},
     6 : {'name' : 'Latch6', 'A2' : 'true', 'A1' : 'true', 'A0' : 'false'},
-    7 : {'name' : 'Latch7', 'A2' : 'true', 'A1' : 'true', 'A0' : 'true'}    
+    7 : {'name' : 'Latch7', 'A2' : 'true', 'A1' : 'true', 'A0' : 'true'}
     }
 
 GPIO.setup(17, GPIO.OUT)
 GPIO.output(17, GPIO.HIGH)
 GPIO.setup(22, GPIO.OUT)
+#GPIO.output(22, GPIO.HIGH)
 GPIO.setup(23, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
@@ -44,7 +45,7 @@ def main():
 # The function below is executed when someone requests a URL with the pin number and action in it:
 @app.route("/<changeLatch>/<action>")
 def action(changeLatch, action):
-    GPIO.output(17, GPIO.HIGH)
+    #GPIO.output(17, GPIO.HIGH)
     # Convert the latch from the URL into an integer:
     changeLatch = int(changeLatch)
     # Get the device name for the latch being changed:
@@ -52,26 +53,31 @@ def action(changeLatch, action):
     
     if latches[changeLatch]['A0'] == 'true':
         GPIO.output(23, GPIO.HIGH)
-    if latches[changeLatch]['A0'] == 'false':
+    else:
         GPIO.output(23, GPIO.LOW)
+
     if latches[changeLatch]['A1'] == 'true':
         GPIO.output(24, GPIO.HIGH)
-    if latches[changeLatch]['A1'] == 'false':
+    else:
         GPIO.output(24, GPIO.LOW)
-    if latches[changeLatch]['A0'] == 'true':
+
+    if latches[changeLatch]['A2'] == 'true':
         GPIO.output(25, GPIO.HIGH)
-    if latches[changeLatch]['A0'] == 'false':
-        GPIO.output(25, GPIO.LOW)   
+    else:
+        GPIO.output(25, GPIO.LOW)
+
+    GPIO.output(17, GPIO.LOW) #change mode to addressable latch
    
-    if action == "on":
-        GPIO.output(22, GPIO.HIGH)
-        GPIO.output(17, GPIO.LOW) #change mode to addressable latch
-        # Save the status message to be passed into the template:
-        message = "Turned " + deviceName + " on."
     if action == "off":
-        GPIO.output(22, GPIO.LOW)
-        GPIO.output(17, GPIO.LOW) #change mode to addressable latch
+        #GPIO.output(17, GPIO.LOW) change mode to addressable latch
+        # Save the status message to be passed into the template:
+    GPIO.output(22, GPIO.LOW)
+    GPIO.output(22, GPIO.HIGH)
         message = "Turned " + deviceName + " off."
+    if action == "on":
+        #GPIO.output(17, GPIO.LOW) change mode to addressable latch
+    GPIO.output(22, GPIO.LOW)
+        message = "Turned " + deviceName + " on."
         
     GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
 
