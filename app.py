@@ -13,59 +13,74 @@ app = Flask(__name__)
 
 GPIO.setmode(GPIO.BCM)
 
-# Create a dictionary called pins to store the pin number, name, and pin state:
-pins = {
-   17 : {'name' : 'GBar', 'state' : GPIO.LOW},
-   22 : {'name' : 'Data', 'state' : GPIO.LOW},
-   23 : {'name' : 'Address_0', 'state' : GPIO.LOW},
-   24 : {'name' : 'Address_1', 'state' : GPIO.LOW},
-   25 : {'name' : 'Address_2', 'state' : GPIO.LOW}
-   }
+latches = {
+    0 : {'name' : 'Latch0', 'A2' : 'false', 'A1' : 'false', 'A0' : 'false'},
+    1 : {'name' : 'Latch1', 'A2' : 'false', 'A1' : 'false', 'A0' : 'true'},
+    2 : {'name' : 'Latch2', 'A2' : 'false', 'A1' : 'true', 'A0' : 'false'},
+    3 : {'name' : 'Latch3', 'A2' : 'false', 'A1' : 'true', 'A0' : 'true'},
+    4 : {'name' : 'Latch4', 'A2' : 'true', 'A1' : 'false', 'A0' : 'false'},
+    5 : {'name' : 'Latch5', 'A2' : 'true', 'A1' : 'false', 'A0' : 'true'},
+    6 : {'name' : 'Latch6', 'A2' : 'true', 'A1' : 'true', 'A0' : 'false'},
+    7 : {'name' : 'Latch7', 'A2' : 'true', 'A1' : 'true', 'A0' : 'true'}    
+    }
 
-# Set each pin as an output and make it low:
-for pin in pins:
-   GPIO.setup(pin, GPIO.OUT)
-   GPIO.output(pin, GPIO.LOW)
+GPIO.setup(17, GPIO.OUT)
+GPIO.output(17, GPIO.HIGH)
+GPIO.setup(22, GPIO.OUT)
+GPIO.setup(23, GPIO.OUT)
+GPIO.setup(24, GPIO.OUT)
+GPIO.setup(25, GPIO.OUT)
+
 
 @app.route("/")
 def main():
-   # For each pin, read the pin state and store it in the pins dictionary:
-   for pin in pins:
-      pins[pin]['state'] = GPIO.input(pin)
    # Put the pin dictionary into the template data dictionary:
    templateData = {
-      'pins' : pins
-      }
+       'latches' : latches
+       }
    # Pass the template data into the template main.html and return it to the user
    return render_template('main.html', **templateData)
 
 # The function below is executed when someone requests a URL with the pin number and action in it:
-@app.route("/<changePin>/<action>")
-def action(changePin, action):
-   # Convert the pin from the URL into an integer:
-   changePin = int(changePin)
-   # Get the device name for the pin being changed:
-   deviceName = pins[changePin]['name']
-   # If the action part of the URL is "on," execute the code indented below:
-   if action == "on":
-      # Set the pin high:
-      GPIO.output(changePin, GPIO.HIGH)
-      # Save the status message to be passed into the template:
-      message = "Turned " + deviceName + " on."
-   if action == "off":
-      GPIO.output(changePin, GPIO.LOW)
-      message = "Turned " + deviceName + " off."
+@app.route("/<changeLatch>/<action>")
+def action(changeLatch, action):
+    GPIO.output(17, GPIO.HIGH)
+    # Convert the latch from the URL into an integer:
+    changeLatch = int(changeLatch)
+    # Get the device name for the latch being changed:
+    deviceName = latches[changeLatch]['name']
+    
+    if latches[changeLatch]['A0'] == 'true':
+        GPIO.output(23, GPIO.HIGH)
+    if latches[changeLatch]['A0'] == 'false':
+        GPIO.output(23, GPIO.LOW)
+    if latches[changeLatch]['A1'] == 'true':
+        GPIO.output(24, GPIO.HIGH)
+    if latches[changeLatch]['A1'] == 'false':
+        GPIO.output(24, GPIO.LOW)
+    if latches[changeLatch]['A0'] == 'true':
+        GPIO.output(25, GPIO.HIGH)
+    if latches[changeLatch]['A0'] == 'false':
+        GPIO.output(25, GPIO.LOW)   
+   
+    if action == "on":
+        GPIO.output(22, GPIO.HIGH)
+        GPIO.output(17, GPIO.LOW) #change mode to addressable latch
+        # Save the status message to be passed into the template:
+        message = "Turned " + deviceName + " on."
+    if action == "off":
+        GPIO.output(22, GPIO.LOW)
+        GPIO.output(17, GPIO.LOW) #change mode to addressable latch
+        message = "Turned " + deviceName + " off."
+        
+    GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
 
-   # For each pin, read the pin state and store it in the pins dictionary:
-   for pin in pins:
-      pins[pin]['state'] = GPIO.input(pin)
+    # Along with the latch dictionary, put the message into the template data dictionary:
+    templateData = {
+        'latches' : latches
+        }
 
-   # Along with the pin dictionary, put the message into the template data dictionary:
-   templateData = {
-      'pins' : pins
-   }
-
-   return render_template('main.html', **templateData)
+    return render_template('main.html', **templateData)
 
 if __name__ == "__main__":
-   app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
