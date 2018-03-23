@@ -69,16 +69,13 @@ def action(changeLatch, action):
     GPIO.output(17, GPIO.LOW) #change mode to addressable latch
    
     if action == "off":
-        #GPIO.output(17, GPIO.LOW) change mode to addressable latch
-        # Save the status message to be passed into the template:
-    GPIO.output(22, GPIO.LOW)
-    GPIO.output(22, GPIO.HIGH)
+        GPIO.output(22, GPIO.LOW)
+        GPIO.output(22, GPIO.HIGH)
         message = "Turned " + deviceName + " off."
     if action == "on":
-        #GPIO.output(17, GPIO.LOW) change mode to addressable latch
-    GPIO.output(22, GPIO.LOW)
+        GPIO.output(22, GPIO.LOW)
         message = "Turned " + deviceName + " on."
-        
+
     GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
 
     # Along with the latch dictionary, put the message into the template data dictionary:
