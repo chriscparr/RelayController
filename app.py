@@ -18,7 +18,7 @@ from flask import Flask, render_template, request
 app = Flask(__name__)                                                                                                    
 
 GPIO.setmode(GPIO.BCM)
-
+GPIO.setwarnings(False)
 
 latches = {
     0 : {'name' : 'Down Light', 'A2' : 'false', 'A1' : 'false', 'A0' : 'false'},
