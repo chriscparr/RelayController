@@ -31,6 +31,17 @@ latches = {
     7 : {'name' : 'Latch7', 'A2' : 'true', 'A1' : 'true', 'A0' : 'true'}
     }
 
+addresses = [
+	(false, false, false),
+	(true, false, false),
+	(false, true, false),
+	(true, true, false),
+	(false, false, true),
+	(true, false, true),
+	(false, true, true),
+	(true, true, true)
+]
+
 GPIO.setup(17, GPIO.OUT)
 GPIO.output(17, GPIO.HIGH)
 GPIO.setup(22, GPIO.OUT)
@@ -91,6 +102,21 @@ def action(changeLatch, action):
         }
 
     return render_template('main.html', **templateData)
+
+def setAddress(latchNumber):
+	if(latchNumber < 0 || latchNumber > len(addresses)):
+		return
+	GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
+	GPIO.output(23, GPIO.LOW)
+	GPIO.output(24, GPIO.LOW)
+	GPIO.output(25, GPIO.LOW)
+	if addresses[latchNumber][0] == true:
+        GPIO.output(23, GPIO.HIGH)
+    if addresses[latchNumber][1] == true:
+        GPIO.output(24, GPIO.HIGH)
+    if addresses[latchNumber][2] == true:
+        GPIO.output(25, GPIO.HIGH)
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True)
