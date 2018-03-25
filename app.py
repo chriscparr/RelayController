@@ -63,26 +63,12 @@ def main():
 # The function below is executed when someone requests a URL with the pin number and action in it:
 @app.route("/<changeLatch>/<action>")
 def action(changeLatch, action):
-	GPIO.output(17, GPIO.HIGH)
 	# Convert the latch from the URL into an integer:
 	changeLatch = int(changeLatch)
 	# Get the device name for the latch being changed:
 	deviceName = latches[changeLatch]['name']
 	
-	if latches[changeLatch]['A0'] == 'true':
-		GPIO.output(23, GPIO.HIGH)
-	else:
-		GPIO.output(23, GPIO.LOW)
-
-	if latches[changeLatch]['A1'] == 'true':
-		GPIO.output(24, GPIO.HIGH)
-	else:
-		GPIO.output(24, GPIO.LOW)
-
-	if latches[changeLatch]['A2'] == 'true':
-		GPIO.output(25, GPIO.HIGH)
-	else:
-		GPIO.output(25, GPIO.LOW)
+	setAddress(changeLatch)
 
 	GPIO.output(17, GPIO.LOW) #change mode to addressable latch
    
