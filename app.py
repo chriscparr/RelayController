@@ -103,6 +103,11 @@ def setAddress(latchNumber):
 	if addresses[latchNumber][2] == True:
 		GPIO.output(25, GPIO.HIGH)
 
+def setOutput(pinNumber, isHigh):
+	if isHigh == True:
+		GPIO.output(pinNumber, GPIO.HIGH)
+	if isHigh == False:
+		GPIO.output(pinNumber, GPIO.LOW)
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0', port=80, debug=True)
