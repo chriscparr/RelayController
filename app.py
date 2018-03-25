@@ -52,58 +52,42 @@ GPIO.setup(25, GPIO.OUT)
 
 @app.route("/")
 def main():
-	try:
-		# Put the pin dictionary into the template data dictionary:
-		templateData = {
-			'latches' : latches
-		}
-		# Pass the template data into the template main.html and return it to the user
-		return render_template('main.html', **templateData)
-	except KeyboardInterrupt:
-		print "Excecution Cancelled"
-	except:
-		print "Some other exception occured!"
-	finally:
-		print "Cleaning up..."
-		GPIO.cleanup()
+	# Put the pin dictionary into the template data dictionary:
+	templateData = {
+		'latches' : latches
+	}
+	# Pass the template data into the template main.html and return it to the user
+	return render_template('main.html', **templateData)
 
 
 # The function below is executed when someone requests a URL with the pin number and action in it:
 @app.route("/<changeLatch>/<action>")
 def action(changeLatch, action):
-	try:
-		# Convert the latch from the URL into an integer:
-		changeLatch = int(changeLatch)
-		# Get the device name for the latch being changed:
-		deviceName = latches[changeLatch]['name']
-		
-		setAddress(changeLatch)
+	# Convert the latch from the URL into an integer:
+	changeLatch = int(changeLatch)
+	# Get the device name for the latch being changed:
+	deviceName = latches[changeLatch]['name']
+	
+	setAddress(changeLatch)
 
-		GPIO.output(17, GPIO.LOW) #change mode to addressable latch
+	GPIO.output(17, GPIO.LOW) #change mode to addressable latch
 
-		if action == "off":
-			GPIO.output(22, GPIO.LOW)
-			GPIO.output(22, GPIO.HIGH)
-			message = "Turned " + deviceName + " off."
-		if action == "on":
-			GPIO.output(22, GPIO.LOW)
-			message = "Turned " + deviceName + " on."
+	if action == "off":
+		GPIO.output(22, GPIO.LOW)
+		GPIO.output(22, GPIO.HIGH)
+		message = "Turned " + deviceName + " off."
+	if action == "on":
+		GPIO.output(22, GPIO.LOW)
+		message = "Turned " + deviceName + " on."
 
-		GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
+	GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
 
-		# Along with the latch dictionary, put the message into the template data dictionary:
-		templateData = {
-			'latches' : latches
-			}
+	# Along with the latch dictionary, put the message into the template data dictionary:
+	templateData = {
+		'latches' : latches
+		}
 
-		return render_template('main.html', **templateData)
-	except KeyboardInterrupt:
-		print "Excecution Cancelled"
-	except:
-		print "Some other exception occured!"
-	finally:
-		print "Cleaning up..."
-		GPIO.cleanup()
+	return render_template('main.html', **templateData)
 
 def setAddress(latchNumber):
 	if(latchNumber < 0 | latchNumber > len(addresses)):
@@ -126,4 +110,12 @@ def setOutput(pinNumber, isHigh):
 		GPIO.output(pinNumber, GPIO.LOW)
 
 if __name__ == "__main__":
-	app.run(host='0.0.0.0', port=80, debug=True)
+	try:
+		app.run(host='0.0.0.0', port=80, debug=True)
+	except KeyboardInterrupt:
+		print "Excecution Cancelled"
+	except:
+		print "Some other exception occured!"
+	finally:
+		print "Cleaning up..."
+		GPIO.cleanup()
