@@ -5,13 +5,20 @@ Adapted excerpt from Getting Started with Raspberry Pi by Matt Richardson
 Modified by Rui Santos
 Complete project details: http://randomnerdtutorials.com
                                                                                                                          
-'''                                                                                                                      
+'''
+
+#Pin17 = !G
+#Pin22 = D
+#Pin23 = A0
+#Pin24 = A1
+#Pin25 = A2                                                                                                                      
                                                                                                                          
 import RPi.GPIO as GPIO                                                                                                  
 from flask import Flask, render_template, request                                                                        
 app = Flask(__name__)                                                                                                    
 
 GPIO.setmode(GPIO.BCM)
+
 
 latches = {
     0 : {'name' : 'Down Light', 'A2' : 'false', 'A1' : 'false', 'A0' : 'false'},
@@ -45,7 +52,7 @@ def main():
 # The function below is executed when someone requests a URL with the pin number and action in it:
 @app.route("/<changeLatch>/<action>")
 def action(changeLatch, action):
-    #GPIO.output(17, GPIO.HIGH)
+    GPIO.output(17, GPIO.HIGH)
     # Convert the latch from the URL into an integer:
     changeLatch = int(changeLatch)
     # Get the device name for the latch being changed:
