@@ -4,7 +4,7 @@ Adapted excerpt from Getting Started with Raspberry Pi by Matt Richardson
 
 Modified by Rui Santos
 Complete project details: http://randomnerdtutorials.com
-                                                                                                                         
+																														 
 '''
 
 #Pin17 = !G
@@ -12,7 +12,7 @@ Complete project details: http://randomnerdtutorials.com
 #Pin23 = A0
 #Pin24 = A1
 #Pin25 = A2                                                                                                                      
-                                                                                                                         
+																														 
 import RPi.GPIO as GPIO                                                                                                  
 from flask import Flask, render_template, request                                                                        
 app = Flask(__name__)                                                                                                    
@@ -21,15 +21,15 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 latches = {
-    0 : {'name' : 'Down Light', 'A2' : 'false', 'A1' : 'false', 'A0' : 'false'},
-    1 : {'name' : 'ScreenL', 'A2' : 'false', 'A1' : 'false', 'A0' : 'true'},
-    2 : {'name' : 'Unused', 'A2' : 'false', 'A1' : 'true', 'A0' : 'false'},
-    3 : {'name' : 'ScreenR', 'A2' : 'false', 'A1' : 'true', 'A0' : 'true'},
-    4 : {'name' : 'Latch4', 'A2' : 'true', 'A1' : 'false', 'A0' : 'false'},
-    5 : {'name' : 'Latch5', 'A2' : 'true', 'A1' : 'false', 'A0' : 'true'},
-    6 : {'name' : 'Latch6', 'A2' : 'true', 'A1' : 'true', 'A0' : 'false'},
-    7 : {'name' : 'Latch7', 'A2' : 'true', 'A1' : 'true', 'A0' : 'true'}
-    }
+	0 : {'name' : 'Down Light', 'A2' : 'false', 'A1' : 'false', 'A0' : 'false'},
+	1 : {'name' : 'ScreenL', 'A2' : 'false', 'A1' : 'false', 'A0' : 'true'},
+	2 : {'name' : 'Unused', 'A2' : 'false', 'A1' : 'true', 'A0' : 'false'},
+	3 : {'name' : 'ScreenR', 'A2' : 'false', 'A1' : 'true', 'A0' : 'true'},
+	4 : {'name' : 'Latch4', 'A2' : 'true', 'A1' : 'false', 'A0' : 'false'},
+	5 : {'name' : 'Latch5', 'A2' : 'true', 'A1' : 'false', 'A0' : 'true'},
+	6 : {'name' : 'Latch6', 'A2' : 'true', 'A1' : 'true', 'A0' : 'false'},
+	7 : {'name' : 'Latch7', 'A2' : 'true', 'A1' : 'true', 'A0' : 'true'}
+	}
 
 addresses = [
 	(False, False, False),
@@ -55,53 +55,53 @@ GPIO.setup(25, GPIO.OUT)
 def main():
    # Put the pin dictionary into the template data dictionary:
    templateData = {
-       'latches' : latches
-       }
+	   'latches' : latches
+	   }
    # Pass the template data into the template main.html and return it to the user
    return render_template('main.html', **templateData)
 
 # The function below is executed when someone requests a URL with the pin number and action in it:
 @app.route("/<changeLatch>/<action>")
 def action(changeLatch, action):
-    GPIO.output(17, GPIO.HIGH)
-    # Convert the latch from the URL into an integer:
-    changeLatch = int(changeLatch)
-    # Get the device name for the latch being changed:
-    deviceName = latches[changeLatch]['name']
-    
-    if latches[changeLatch]['A0'] == 'true':
-        GPIO.output(23, GPIO.HIGH)
-    else:
-        GPIO.output(23, GPIO.LOW)
+	GPIO.output(17, GPIO.HIGH)
+	# Convert the latch from the URL into an integer:
+	changeLatch = int(changeLatch)
+	# Get the device name for the latch being changed:
+	deviceName = latches[changeLatch]['name']
+	
+	if latches[changeLatch]['A0'] == 'true':
+		GPIO.output(23, GPIO.HIGH)
+	else:
+		GPIO.output(23, GPIO.LOW)
 
-    if latches[changeLatch]['A1'] == 'true':
-        GPIO.output(24, GPIO.HIGH)
-    else:
-        GPIO.output(24, GPIO.LOW)
+	if latches[changeLatch]['A1'] == 'true':
+		GPIO.output(24, GPIO.HIGH)
+	else:
+		GPIO.output(24, GPIO.LOW)
 
-    if latches[changeLatch]['A2'] == 'true':
-        GPIO.output(25, GPIO.HIGH)
-    else:
-        GPIO.output(25, GPIO.LOW)
+	if latches[changeLatch]['A2'] == 'true':
+		GPIO.output(25, GPIO.HIGH)
+	else:
+		GPIO.output(25, GPIO.LOW)
 
-    GPIO.output(17, GPIO.LOW) #change mode to addressable latch
+	GPIO.output(17, GPIO.LOW) #change mode to addressable latch
    
-    if action == "off":
-        GPIO.output(22, GPIO.LOW)
-        GPIO.output(22, GPIO.HIGH)
-        message = "Turned " + deviceName + " off."
-    if action == "on":
-        GPIO.output(22, GPIO.LOW)
-        message = "Turned " + deviceName + " on."
+	if action == "off":
+		GPIO.output(22, GPIO.LOW)
+		GPIO.output(22, GPIO.HIGH)
+		message = "Turned " + deviceName + " off."
+	if action == "on":
+		GPIO.output(22, GPIO.LOW)
+		message = "Turned " + deviceName + " on."
 
-    GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
+	GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
 
-    # Along with the latch dictionary, put the message into the template data dictionary:
-    templateData = {
-        'latches' : latches
-        }
+	# Along with the latch dictionary, put the message into the template data dictionary:
+	templateData = {
+		'latches' : latches
+		}
 
-    return render_template('main.html', **templateData)
+	return render_template('main.html', **templateData)
 
 def setAddress(latchNumber):
 	if(latchNumber < 0 | latchNumber > len(addresses)):
@@ -111,12 +111,12 @@ def setAddress(latchNumber):
 	GPIO.output(24, GPIO.LOW)
 	GPIO.output(25, GPIO.LOW)
 	if addresses[latchNumber][0] == True:
-    	GPIO.output(23, GPIO.HIGH)
-    if addresses[latchNumber][1] == True:
-    	GPIO.output(24, GPIO.HIGH)
-    if addresses[latchNumber][2] == True:
-    	GPIO.output(25, GPIO.HIGH)
+		GPIO.output(23, GPIO.HIGH)
+	if addresses[latchNumber][1] == True:
+		GPIO.output(24, GPIO.HIGH)
+	if addresses[latchNumber][2] == True:
+		GPIO.output(25, GPIO.HIGH)
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80, debug=True)
+	app.run(host='0.0.0.0', port=80, debug=True)
