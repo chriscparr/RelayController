@@ -63,7 +63,7 @@ def main():
 # The function below is executed when someone requests a URL with the pin number and action in it:
 @app.route("/<changeLatch>/<action>")
 def action(changeLatch, action):
-	GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
+	setOutput(17, True) #change mode to memory to ignore input
 	# Convert the latch from the URL into an integer:
 	changeLatch = int(changeLatch)
 	# Get the device name for the latch being changed:
@@ -71,17 +71,17 @@ def action(changeLatch, action):
 	
 	setAddress(changeLatch)
 
-	GPIO.output(17, GPIO.LOW) #change mode to addressable latch
+	setOutput(17, False) #change mode to addressable latch
 
 	if action == "off":
-		GPIO.output(22, GPIO.LOW)
-		GPIO.output(22, GPIO.HIGH)
+		setOutput(22, False)
+		setOutput(22, True)
 		message = "Turned " + deviceName + " off."
 	if action == "on":
-		GPIO.output(22, GPIO.LOW)
+		setOutput(22, False)
 		message = "Turned " + deviceName + " on."
 
-	GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
+	setOutput(17, True) #change mode to memory to ignore input
 
 	# Along with the latch dictionary, put the message into the template data dictionary:
 	templateData = {
@@ -91,7 +91,7 @@ def action(changeLatch, action):
 	return render_template('main.html', **templateData)
 
 def setAddress(latchNumber):
-	GPIO.output(17, GPIO.HIGH) #change mode to memory to ignore input
+	setOutput(17, True) #change mode to memory to ignore input
 	setOutput(23, addresses[latchNumber][0])
 	setOutput(24, addresses[latchNumber][1])
 	setOutput(25, addresses[latchNumber][2])
