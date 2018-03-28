@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+   <title>Sijax test area</title>
+   <!-- Compiled and minified jQuery library -->
+   <script src="/static/js/jQuery/jquery-3.3.1.min.js"></script>
+   <!-- Latest compiled and minified JavaScript -->
+   <script src="/static/bootstrap.min.js"></script>
+   <script type="text/javascript" src="/static/js/sijax/sijax.js"></script>
+   <script type="text/javascript">
+    {{ g.sijax.get_js()|safe }}
+   </script>
+      <!-- Optional theme -->
+   <link rel="stylesheet" href="/static/appStyle.css">
+</head>
+<body>
+    <a href="javascript://" onclick="Sijax.request('say_hi');">Click here</a>
+</body>
