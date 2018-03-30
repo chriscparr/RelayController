@@ -9,9 +9,13 @@
    <script type="text/javascript">
     {{ g.sijax.get_js()|safe }}
    </script>
+   <script type="text/javascript">
+    var csrfToken = "{{ csrf_token() }}"
+   </script>
       <!-- Optional theme -->
    <link rel="stylesheet" href="/static/appStyle.css">
 </head>
 <body>
-    <a href="javascript://" onclick="Sijax.request('say_hi');">Click here</a>
+    <!-- <a href="javascript://" onclick="Sijax.request('say_hi');">Click here</a> -->
+    <a href="javascript://" onclick="Sijax.request('say_hi', { data: { csrf_token: '{{ csrf_token() }}' } });">Click here</a>
 </body>

@@ -1,6 +1,8 @@
 import os
+import hmac
 import RPi.GPIO as GPIO
-from flask import Flask, g, render_template, request
+from hashlib import sha1
+from flask import Flask, g, render_template, request, session
 import flask_sijax
 
 path = os.path.join('.', os.path.dirname(__file__), 'static/js/sijax/')
@@ -28,6 +30,29 @@ def main():
     # Regular (non-Sijax request) - render the page template
     return render_template('test_main.html')
 
+@app.template_global('csrf_token')
+def csrf_token():
+    """
+    Generate a token string from bytes arrays. The token in the session is user
+    specific.
+    """
+    if "_csrf_token" not in session:
+        session["_csrf_token"] = os.urandom(128)
+    
+    return hmac.new(app.secret_key, session["_csrf_token"], digestmod=sha1).hexdigest()
+
+@app.before_request
+def check_csrf_token():
+    """Checks that token is correct, aborting if not"""
+    if request.method in ("GET",): # not exhaustive list
+        return
+    token = request.form.get("csrf_token")
+    if token is None:
+        app.logger.warning("Expected CSRF Token: not present")
+        abort(400)
+    if not safe_str_cmp(token, csrf_token()):
+        app.logger.warning("CSRF Token incorrect")
+        abort(400)
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0', port=80, debug=True)
