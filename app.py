@@ -1,42 +1,33 @@
-'''
-
-Adapted excerpt from Getting Started with Raspberry Pi by Matt Richardson
-
-Modified by Rui Santos
-Complete project details: http://randomnerdtutorials.com
-																														 
-'''
-
 #Pin17 = !G
 #Pin22 = D
 #Pin23 = A0
 #Pin24 = A1
-#Pin25 = A2                                                                                                                      
-																														 
-import RPi.GPIO as GPIO                                                                                                  
-from flask import Flask, render_template, request                                                                        
-app = Flask(__name__)                                                                                                    
+#Pin25 = A2
+
+import os
+import hmac
+import RPi.GPIO as GPIO
+import flask_sijax
+from hashlib import sha1
+from flask import Flask, g, render_template, abort, request, session
+from werkzeug.security import safe_str_cmp
+
+path = os.path.join('.', os.path.dirname(__file__), 'static/js/sijax/')
+
+app = Flask(__name__)
+app.secret_key = os.urandom(128)
+app.config['SIJAX_STATIC_PATH'] = path
+app.config['SIJAX_JSON_URI'] = '/static/js/sijax/json2.js'
+flask_sijax.Sijax(app)
 
 GPIO.setmode(GPIO.BCM)
-
-'''
-latches = {
-	0 : {'name' : 'Down Light', 'A2' : 'false', 'A1' : 'false', 'A0' : 'false'},
-	1 : {'name' : 'ScreenL', 'A2' : 'false', 'A1' : 'false', 'A0' : 'true'},
-	2 : {'name' : 'Unused', 'A2' : 'false', 'A1' : 'true', 'A0' : 'false'},
-	3 : {'name' : 'ScreenR', 'A2' : 'false', 'A1' : 'true', 'A0' : 'true'},
-	4 : {'name' : 'Down Light', 'A2' : 'true', 'A1' : 'false', 'A0' : 'false'},
-	5 : {'name' : 'Latch5', 'A2' : 'true', 'A1' : 'false', 'A0' : 'true'},
-	6 : {'name' : 'Latch6', 'A2' : 'true', 'A1' : 'true', 'A0' : 'false'},
-	7 : {'name' : 'Latch7', 'A2' : 'true', 'A1' : 'true', 'A0' : 'true'}
-	}
-'''
+GPIO.setwarnings(False)
 
 latches = {
-	1 : {'name' : 'ScreenL', 'A2' : 'false', 'A1' : 'false', 'A0' : 'true'},
-	2 : {'name' : 'Unused', 'A2' : 'false', 'A1' : 'true', 'A0' : 'false'},
-	3 : {'name' : 'ScreenR', 'A2' : 'false', 'A1' : 'true', 'A0' : 'true'},
-	4 : {'name' : 'Down Light', 'A2' : 'true', 'A1' : 'false', 'A0' : 'false'}
+	1 : {'name' : 'ScreenL'},
+	2 : {'name' : 'Unused'},
+	3 : {'name' : 'ScreenR'},
+	4 : {'name' : 'Down Light'}
 	}
 
 addresses = [
@@ -53,50 +44,37 @@ addresses = [
 GPIO.setup(17, GPIO.OUT)
 GPIO.output(17, GPIO.HIGH)
 GPIO.setup(22, GPIO.OUT)
-#GPIO.output(22, GPIO.HIGH)
 GPIO.setup(23, GPIO.OUT)
 GPIO.setup(24, GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
 
 
-@app.route("/")
+@flask_sijax.route(app, '/')
 def main():
+
+	def setLatch(obj_response, latchNum, action):
+		setOutput(17, True) #change mode to memory to ignore input
+		setAddress(latchNum)
+		setOutput(17, False) #change mode to addressable latch
+		if action == "off":
+			setOutput(22, False)
+			setOutput(22, True)
+			obj_response.alert("Turning latch %s off." % (latchNum))
+		if action == "on":
+			setOutput(22, False)
+			obj_response.alert("Turning latch %s on." % (latchNum))
+		setOutput(17, True) #change mode to memory to ignore input
+
+	if g.sijax.is_sijax_request:
+		# Sijax request detected - let Sijax handle it
+		g.sijax.register_callback('setLatch', setLatch)
+		return g.sijax.process_request()
+
 	# Put the pin dictionary into the template data dictionary:
 	templateData = {
 		'latches' : latches
 	}
-	# Pass the template data into the template main.html and return it to the user
-	return render_template('main.html', **templateData)
-
-
-# The function below is executed when someone requests a URL with the pin number and action in it:
-@app.route("/<changeLatch>/<action>")
-def action(changeLatch, action):
-	setOutput(17, True) #change mode to memory to ignore input
-	# Convert the latch from the URL into an integer:
-	changeLatch = int(changeLatch)
-	# Get the device name for the latch being changed:
-	deviceName = latches[changeLatch]['name']
-	
-	setAddress(changeLatch)
-
-	setOutput(17, False) #change mode to addressable latch
-
-	if action == "off":
-		setOutput(22, False)
-		setOutput(22, True)
-		message = "Turned " + deviceName + " off."
-	if action == "on":
-		setOutput(22, False)
-		message = "Turned " + deviceName + " on."
-
-	setOutput(17, True) #change mode to memory to ignore input
-
-	# Along with the latch dictionary, put the message into the template data dictionary:
-	templateData = {
-		'latches' : latches
-		}
-
+	# Regular (non-Sijax request) - render the page template
 	return render_template('main.html', **templateData)
 
 def setAddress(latchNumber):
@@ -110,6 +88,32 @@ def setOutput(pinNumber, isHigh):
 		GPIO.output(pinNumber, GPIO.HIGH)
 	if isHigh == False:
 		GPIO.output(pinNumber, GPIO.LOW)
+
+@app.template_global('csrf_token')
+def csrf_token():
+    """
+    Generate a token string from bytes arrays. The token in the session is user
+    specific.
+    """
+    if "_csrf_token" not in session:
+        session["_csrf_token"] = os.urandom(128)
+    
+    return hmac.new(app.secret_key, session["_csrf_token"], digestmod=sha1).hexdigest()
+
+@app.before_request
+def check_csrf_token():
+    """Checks that token is correct, aborting if not"""
+    if request.method in ("GET",): # not exhaustive list
+        return
+    token = request.form.get("csrf_token")
+    if token is None:
+        app.logger.warning("Expected CSRF Token: not present")
+        abort(400)
+    if not safe_str_cmp(token, csrf_token()):
+        app.logger.warning("CSRF Token incorrect")
+        abort(400)
+
+
 
 if __name__ == "__main__":
 	try:

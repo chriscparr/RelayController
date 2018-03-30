@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <head>
-   <title>RPi Web Server</title>
+   <title>RPi Relay Controller</title>
    <!-- Compiled and minified jQuery library -->
    <script src="/static/js/jQuery/jquery-3.3.1.min.js"></script>
    <!-- Latest compiled and minified JavaScript -->
    <script src="/static/bootstrap.min.js"></script>
+   <script type="text/javascript" src="/static/js/sijax/sijax.js"></script>
+   <script type="text/javascript">
+    {{ g.sijax.get_js()|safe }}
+   </script>
+   <script type="text/javascript">
+    var csrfToken = "{{ csrf_token() }}"
+   </script>
       <!-- Optional theme -->
    <link rel="stylesheet" href="/static/appStyle.css">
 </head>
@@ -15,8 +22,8 @@
    {% for latch in latches %}
    <div class="floating-box">
    <h2>{{ latches[latch].name }}</h2>
-   <a href="/{{latch}}/off"><img src="/static/off.png" alt="Off" width="144" height="119"></a>
-   <a href="/{{latch}}/on"><img src="/static/on.png" alt="On" width="144" height="119"></a>
+   <a href="javascript://" onclick="Sijax.request('setLatch', [{{latch}}, 'off'], { data: { csrf_token: csrfToken } });"><img src="/static/off.png" alt="Off" width="144" height="119"></a>
+   <a href="javascript://" onclick="Sijax.request('setLatch', [{{latch}}, 'on'], { data: { csrf_token: csrfToken } });"><img src="/static/on.png" alt="On" width="144" height="119"></a>
    </div>   
    {% endfor %}
    </div>
