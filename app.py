@@ -59,10 +59,10 @@ def main():
 		if action == "off":
 			setOutput(22, False)
 			setOutput(22, True)
-			obj_response.alert("Turning latch %s off." % (latchNum))
+			#obj_response.alert("Turning latch %s off." % (latchNum))
 		if action == "on":
 			setOutput(22, False)
-			obj_response.alert("Turning latch %s on." % (latchNum))
+			#obj_response.alert("Turning latch %s on." % (latchNum))
 		setOutput(17, True) #change mode to memory to ignore input
 
 	if g.sijax.is_sijax_request:
