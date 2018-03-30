@@ -19,9 +19,9 @@ def main():
 
 	def setLatch(obj_response, latchNum, action):
 		if action == "off":
-			obj_response.alert("Turning latch " + latchNum + " off.")
+			obj_response.alert("Turning latch %s off." % (latchNum))
 		if action == "on":
-			obj_response.alert("Turning latch " + latchNum + " on.")
+			obj_response.alert("Turning latch %s on." % (latchNum))
 
     # Every Sijax handler function (like this one) receives at least
     # one parameter automatically, much like Python passes `self`
