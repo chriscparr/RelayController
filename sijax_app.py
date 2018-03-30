@@ -28,17 +28,17 @@ def main():
     # to object methods.
     # The `obj_response` parameter is the function's way of talking
     # back to the browser
-    def say_hi(obj_response):
-        obj_response.alert('Hi there!')
+	def say_hi(obj_response):
+		obj_response.alert('Hi there!')
 
-    if g.sijax.is_sijax_request:
-        # Sijax request detected - let Sijax handle it
-        g.sijax.register_callback('say_hi', say_hi)
-        g.sijax.register_callback('setLatch', setLatch)
-        return g.sijax.process_request()
+	if g.sijax.is_sijax_request:
+		# Sijax request detected - let Sijax handle it
+		g.sijax.register_callback('say_hi', say_hi)
+		g.sijax.register_callback('setLatch', setLatch)
+		return g.sijax.process_request()
 
-    # Regular (non-Sijax request) - render the page template
-    return render_template('test_main.html')
+	# Regular (non-Sijax request) - render the page template
+	return render_template('test_main.html')
 
 @app.template_global('csrf_token')
 def csrf_token():
