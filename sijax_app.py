@@ -1,6 +1,6 @@
 import os
 import RPi.GPIO as GPIO
-from flask import Flask, g
+from flask import Flask, g, render_template, request
 import flask_sijax
 
 path = os.path.join('.', os.path.dirname(__file__), 'static/js/sijax/')
