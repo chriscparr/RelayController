@@ -1,9 +1,10 @@
 import os
 import hmac
 import RPi.GPIO as GPIO
+import flask_sijax
 from hashlib import sha1
 from flask import Flask, g, render_template, abort, request, session
-import flask_sijax
+from werkzeug.security import safe_str_cmp
 
 path = os.path.join('.', os.path.dirname(__file__), 'static/js/sijax/')
 
