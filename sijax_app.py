@@ -16,6 +16,13 @@ flask_sijax.Sijax(app)
 
 @flask_sijax.route(app, '/')
 def main():
+
+	def setLatch(obj_response, latchNum, action):
+		if action == "off":
+			obj_response.alert("Turning latch " + latchNum + " off.")
+		if action == "on":
+			obj_response.alert("Turning latch " + latchNum + " on.")
+
     # Every Sijax handler function (like this one) receives at least
     # one parameter automatically, much like Python passes `self`
     # to object methods.
@@ -27,6 +34,7 @@ def main():
     if g.sijax.is_sijax_request:
         # Sijax request detected - let Sijax handle it
         g.sijax.register_callback('say_hi', say_hi)
+        g.sijax.register_callback('setLatch', setLatch)
         return g.sijax.process_request()
 
     # Regular (non-Sijax request) - render the page template
