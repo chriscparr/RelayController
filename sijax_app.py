@@ -2,7 +2,7 @@ import os
 import hmac
 import RPi.GPIO as GPIO
 from hashlib import sha1
-from flask import Flask, g, render_template, request, session
+from flask import Flask, g, render_template, abort, request, session
 import flask_sijax
 
 path = os.path.join('.', os.path.dirname(__file__), 'static/js/sijax/')
