@@ -24,6 +24,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 latches = {
+	0 : {'name' : 'All'},
 	1 : {'name' : 'ScreenL'},
 	2 : {'name' : 'Unused'},
 	3 : {'name' : 'ScreenR'},
@@ -53,6 +54,8 @@ GPIO.setup(25, GPIO.OUT)
 def main():
 
 	def setLatch(obj_response, latchNum, action):
+		applyLatchAction(latchNum, action)
+		'''
 		setOutput(17, True) #change mode to memory to ignore input
 		setAddress(latchNum)
 		setOutput(17, False) #change mode to addressable latch
@@ -64,7 +67,7 @@ def main():
 			setOutput(22, False)
 			#obj_response.alert("Turning latch %s on." % (latchNum))
 		setOutput(17, True) #change mode to memory to ignore input
-
+		'''
 	if g.sijax.is_sijax_request:
 		# Sijax request detected - let Sijax handle it
 		g.sijax.register_callback('setLatch', setLatch)
@@ -82,6 +85,19 @@ def setAddress(latchNumber):
 	setOutput(23, addresses[latchNumber][0])
 	setOutput(24, addresses[latchNumber][1])
 	setOutput(25, addresses[latchNumber][2])
+
+def applyLatchAction(latchNum, action):
+	setOutput(17, True) #change mode to memory to ignore input
+	setAddress(latchNum)
+	setOutput(17, False) #change mode to addressable latch
+	if action == "off":
+		setOutput(22, False)
+		setOutput(22, True)
+		#obj_response.alert("Turning latch %s off." % (latchNum))
+	if action == "on":
+		setOutput(22, False)
+		#obj_response.alert("Turning latch %s on." % (latchNum))
+	setOutput(17, True) #change mode to memory to ignore input
 
 def setOutput(pinNumber, isHigh):
 	if isHigh == True:
