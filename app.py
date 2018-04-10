@@ -54,20 +54,12 @@ GPIO.setup(25, GPIO.OUT)
 def main():
 
 	def setLatch(obj_response, latchNum, action):
-		applyLatchAction(latchNum, action)
-		'''
-		setOutput(17, True) #change mode to memory to ignore input
-		setAddress(latchNum)
-		setOutput(17, False) #change mode to addressable latch
-		if action == "off":
-			setOutput(22, False)
-			setOutput(22, True)
-			#obj_response.alert("Turning latch %s off." % (latchNum))
-		if action == "on":
-			setOutput(22, False)
-			#obj_response.alert("Turning latch %s on." % (latchNum))
-		setOutput(17, True) #change mode to memory to ignore input
-		'''
+		if latchNum == 0:
+			for key in latches[1:]:
+				applyLatchAction(key, action)
+		else:
+			applyLatchAction(latchNum, action)
+
 	if g.sijax.is_sijax_request:
 		# Sijax request detected - let Sijax handle it
 		g.sijax.register_callback('setLatch', setLatch)
