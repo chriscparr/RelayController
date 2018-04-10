@@ -55,7 +55,9 @@ def main():
 
 	def setLatch(obj_response, latchNum, action):
 		if latchNum == 0:
-			for key in latches[1:]:
+			for key in latches:
+				if key == 0:
+					continue
 				applyLatchAction(key, action)
 		else:
 			applyLatchAction(latchNum, action)
