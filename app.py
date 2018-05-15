@@ -27,8 +27,8 @@ GPIO.setwarnings(False)
 latches = {
 	0 : {'name' : 'All'},
 	1 : {'name' : 'ScreenL'},
-	2 : {'name' : 'Unused'},
-	3 : {'name' : 'ScreenR'},
+	2 : {'name' : 'ScreenR'},
+	3 : {'name' : 'Unused'},
 	4 : {'name' : 'Down Light'}
 	}
 
