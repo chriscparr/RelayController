@@ -87,15 +87,16 @@ def setAddress(latchNumber):
 def applyLatchAction(latchNum, action):
 	#setOutput(17, True) #change mode to memory to ignore input
 	setAddress(latchNum)
-	time.sleep(0.01)
-	setOutput(17, False) #change mode to addressable latch
+	#setOutput(17, False) #change mode to addressable latch
 	if action == "off":
-		setOutput(22, False)
+		#setOutput(22, False)
 		setOutput(22, True)
 		#obj_response.alert("Turning latch %s off." % (latchNum))
 	if action == "on":
 		setOutput(22, False)
 		#obj_response.alert("Turning latch %s on." % (latchNum))
+	setOutput(17, False) #change mode to addressable latch
+	time.sleep(0.01)
 	setOutput(17, True) #change mode to memory to ignore input
 
 def setOutput(pinNumber, isHigh):
