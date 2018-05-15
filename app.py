@@ -45,10 +45,13 @@ addresses = [
 GPIO.setup(17, GPIO.OUT)
 GPIO.output(17, GPIO.HIGH)
 GPIO.setup(22, GPIO.OUT)
+GPIO.output(22, GPIO.HIGH)
 GPIO.setup(23, GPIO.OUT)
+GPIO.output(23, GPIO.LOW)
 GPIO.setup(24, GPIO.OUT)
+GPIO.output(24, GPIO.LOW)
 GPIO.setup(25, GPIO.OUT)
-
+GPIO.output(25, GPIO.LOW)
 
 @flask_sijax.route(app, '/')
 def main():
